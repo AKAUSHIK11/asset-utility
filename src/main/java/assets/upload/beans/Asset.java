@@ -4,18 +4,22 @@ import java.io.File;
 
 public class Asset implements Cloneable {
 	
-	public Asset(String id, String fileName, File file) {
+	public Asset(String id, String fileName, File file,String tableName,String columnName) {
 		super();
 		this.id = id;
 		this.name = fileName;
 		this.file = file;
+		this.tableName=tableName;
+		this.columnName=columnName;
 	}
-	
+
 	String id;
 	String name;
 	File file;
 	boolean isUploaded;
 	boolean isFileSizeCompatible;
+	String tableName;
+	String columnName;
 	
 	public String getId() {
 		return id;
@@ -47,10 +51,23 @@ public class Asset implements Cloneable {
 	public void setFileSizeCompatible(boolean isFileSizeCompatible) {
 		this.isFileSizeCompatible = isFileSizeCompatible;
 	}
+	
+	public String getTableName() {
+		return tableName;
+	}
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+	public String getColumnName() {
+		return columnName;
+	}
+	public void setColumnName(String columnName) {
+		this.columnName = columnName;
+	}
 	@Override
 	public Object clone() {
 		
-		Asset cloneObject = new Asset(this.getId(), this.getName(), this.getFile());
+		Asset cloneObject = new Asset(this.getId(), this.getName(), this.getFile(),this.getTableName(),this.getColumnName());
 		cloneObject.setUploaded(this.isUploaded());	
 		cloneObject.setFileSizeCompatible(this.isFileSizeCompatible());
 		return cloneObject;

@@ -68,6 +68,12 @@ public class AssetsInfo {
 					else if (cell.getStringCellValue().equalsIgnoreCase("File Name")) {
 						columns.add(columnPosition);
 					}
+					else if (cell.getStringCellValue().equalsIgnoreCase("Table Name")) {
+						columns.add(columnPosition);
+					}
+					else if (cell.getStringCellValue().equalsIgnoreCase("Column Name")) {
+						columns.add(columnPosition);
+					}
 					columnPosition++;
 				}
 			}
@@ -75,7 +81,9 @@ public class AssetsInfo {
 				row = rowIterator.next();
 				String id = Long.toString(Math.round(row.getCell(columns.get(0)).getNumericCellValue()));
 				String name = row.getCell(columns.get(1)).getStringCellValue();
-				asset = new Asset(id, name, new File(sourceDir + name));
+				String tableName=row.getCell(columns.get(2)).getStringCellValue();
+				String columnName=row.getCell(columns.get(3)).getStringCellValue();
+				asset = new Asset(id, name, new File(sourceDir + name),tableName,columnName);
 				assets.add(asset);
 			}
 		} catch (Exception ex) {

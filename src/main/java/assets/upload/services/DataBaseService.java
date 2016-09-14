@@ -29,9 +29,12 @@ public class DataBaseService {
 		
 		Connection connection = dbHelper.getConnection();
 		for (Asset asset : assets) {
+			String tableName=asset.getTableName();
+			String Id=asset.getId();
+			String columnName=asset.getColumnName();
 			PreparedStatement preparedStatement;
 			try {
-				preparedStatement = connection.prepareStatement("UPDATE TBL_GAME_ITEMS SET HTML_ASSET_BYTES=? WHERE GAME_ITEM_ID=?");
+				preparedStatement = connection.prepareStatement("UPDATE " + tableName+ " SET HTML_ASSET_BYTES=? WHERE "+ columnName+" =?");
 				inserAsset(asset, preparedStatement);
 			} catch (SQLException ex) {
 				LOGGER.error("Problem occured while getting prepared statement object." , ex);
