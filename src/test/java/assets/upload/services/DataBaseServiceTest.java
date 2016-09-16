@@ -41,7 +41,7 @@ public class DataBaseServiceTest {
 	
 	@Test
 	public void inserAssets()throws Exception {
-		Asset asset = new Asset("102", "102.tld", new File("e://abc.xyz"));
+		Asset asset = new Asset("102", "102.tld", new File("e://abc.xyz"),"test_table","test_column");
 		List<Asset> assets = new ArrayList<Asset>();
 		assets.add(asset);
 		when(dbHelper.getConnection()).thenReturn(mockConnection);
@@ -51,7 +51,7 @@ public class DataBaseServiceTest {
 		when(inputStream.available()).thenReturn(1024);
 		DataBaseService dataBaseService = new DataBaseService(mockProperties){
 			@Override
-			protected void inserAsset(Asset asset, PreparedStatement preparedStatement) {
+			protected void insertAsset(Asset asset, PreparedStatement preparedStatement) {
 				
 			}
 		};
@@ -65,7 +65,7 @@ public class DataBaseServiceTest {
 	
 	@Test
 	public void inserAsset()throws Exception {
-		Asset asset = new Asset("102", "102.tld", new File("e://abc.xyz"));
+		Asset asset = new Asset("102", "102.tld", new File("e://abc.xyz"),"test_table","test_column");
 		asset.setFileSizeCompatible(true);
 		
 		when(dbHelper.getConnection()).thenReturn(mockConnection);
@@ -85,14 +85,14 @@ public class DataBaseServiceTest {
 		Field privateField = DataBaseService.class.getDeclaredField("dbHelper");
 		privateField.setAccessible(true);
 		privateField.set(dataBaseService, dbHelper);
-		dataBaseService.inserAsset(asset, mockPreparedStatement);
+		dataBaseService.insertAsset(asset, mockPreparedStatement);
 		assertEquals(asset.isUploaded(), true);
 		verify(dbHelper).closeStatement(mockPreparedStatement);
 	}
 	
 	@Test
 	public void inserAssetNoRecordUpdated()throws Exception {
-		Asset asset = new Asset("102", "102.tld", new File("e://abc.xyz"));
+		Asset asset = new Asset("102", "102.tld", new File("e://abc.xyz"),"test_table","test_column");
 		asset.setFileSizeCompatible(true);
 		
 		when(dbHelper.getConnection()).thenReturn(mockConnection);
@@ -112,14 +112,14 @@ public class DataBaseServiceTest {
 		Field privateField = DataBaseService.class.getDeclaredField("dbHelper");
 		privateField.setAccessible(true);
 		privateField.set(dataBaseService, dbHelper);
-		dataBaseService.inserAsset(asset, mockPreparedStatement);
+		dataBaseService.insertAsset(asset, mockPreparedStatement);
 		assertEquals(asset.isUploaded(), false);
 		verify(dbHelper).closeStatement(mockPreparedStatement);
 	}
 	
 	@Test
 	public void inserAssetFileSizeNotCompatible()throws Exception {
-		Asset asset = new Asset("102", "102.tld", new File("e://abc.xyz"));
+		Asset asset = new Asset("102", "102.tld", new File("e://abc.xyz"),"test_table","test_column");
 		asset.setFileSizeCompatible(false);
 		
 		when(dbHelper.getConnection()).thenReturn(mockConnection);
@@ -139,13 +139,13 @@ public class DataBaseServiceTest {
 		Field privateField = DataBaseService.class.getDeclaredField("dbHelper");
 		privateField.setAccessible(true);
 		privateField.set(dataBaseService, dbHelper);
-		dataBaseService.inserAsset(asset, mockPreparedStatement);
+		dataBaseService.insertAsset(asset, mockPreparedStatement);
 		assertEquals(asset.isUploaded(), false);
 		verify(dbHelper).closeStatement(mockPreparedStatement);
 	}
 	@Test
 	public void inserAssetFileNotFoundException()throws Exception {
-		Asset asset = new Asset("102", "102.tld", new File("e://abc.xyz"));
+		Asset asset = new Asset("102", "102.tld", new File("e://abc.xyz"),"test_table","test_column");
 		asset.setFileSizeCompatible(true);
 		
 		when(dbHelper.getConnection()).thenReturn(mockConnection);
@@ -160,7 +160,7 @@ public class DataBaseServiceTest {
 		Field privateField = DataBaseService.class.getDeclaredField("dbHelper");
 		privateField.setAccessible(true);
 		privateField.set(dataBaseService, dbHelper);
-		dataBaseService.inserAsset(asset, mockPreparedStatement);
+		dataBaseService.insertAsset(asset, mockPreparedStatement);
 		assertEquals(asset.isUploaded(), false);
 		verify(dbHelper).closeStatement(mockPreparedStatement);
 	}

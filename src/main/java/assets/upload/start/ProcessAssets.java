@@ -22,15 +22,19 @@ public class ProcessAssets {
 			throw new Exception();
 		}
 		
-		this.assets = loadAssetsInfo();
-		updateFileSizeCompatibility(this.assets);
+		this.uploadingAssets = loadAssetsInfo();
+		this.downloadingAssets=loadDownloadingAssetsInfo();
+		updateFileSizeCompatibility(this.uploadingAssets);
 	}
 	
+	
+
 	private static Logger LOGGER = Logger.getLogger(ProcessAssets.class);
 	private static final String PROPERTY_FILE = "application-resources.properties";
 	private Properties resourceInfo;
 	private FileUtil fileUtil = new FileUtil();
-	private List<Asset> assets;
+	private List<Asset> uploadingAssets;
+	private List<Asset> downloadingAssets;
 	
 	/**
 	 * Loads configuration property file in classpath
@@ -82,17 +86,23 @@ public class ProcessAssets {
 	        if(destinations.length > 0){
 	        	for (String destination : destinations) {
 	        		switch (destination) {
-					case "DB":
-						LOGGER.info("---- DB module has been started.---- ");
-						assetsDestination = getDBDestination();
+					case "DBUpload":
+						LOGGER.info("---- DBUpload module has been started.---- ");
+						assetsDestination = getDBUploadDestination();
 						assetsDestination.upload();
-						LOGGER.info("---- DB module has been completed.---- ");
+						LOGGER.info("---- DBUpload module has been completed.---- ");
 						break;
 					case "FTP":
 						LOGGER.info("---- FTP module has been started.---- ");
 						assetsDestination = getFTPDestination();
 						assetsDestination.upload();
 						LOGGER.info("---- FTP module has been completed.---- ");
+						break;
+					case "DBDownload":
+						LOGGER.info("---- DBDownload module has been started.---- ");
+						assetsDestination = getDBDownloadDestination();
+						assetsDestination.download();
+						LOGGER.info("---- DBDownload module has been completed.---- ");
 						break;
 					default:
 						LOGGER.info("Sorry, currently this utility doesn't procees assets to destination: " +destination);
@@ -119,18 +129,39 @@ public class ProcessAssets {
 	 */
 	protected void updateFileSizeCompatibility(List<Asset> assets){
 		Long fileSize = Long.parseLong(resourceInfo.getProperty("asset.size"));
-		this.assets = new ArrayList<Asset>();
+		this.uploadingAssets = new ArrayList<Asset>();
 		for(Asset asset : assets){
 			if(asset.getFile().length() <= fileSize){
 				asset.setFileSizeCompatible(true);
 			}
-			this.assets.add(asset);
+			this.uploadingAssets.add(asset);
 		}
 	}
-	protected DBDestination getDBDestination(){
-		return new DBDestination(resourceInfo, cloneAssets(assets));
+	protected DBDestination getDBUploadDestination(){
+		return new DBDestination(resourceInfo, cloneAssets(uploadingAssets));
 	}
 	protected FTPDestination getFTPDestination(){
-		return new FTPDestination(resourceInfo, cloneAssets(assets));
+		return new FTPDestination(resourceInfo, cloneAssets(uploadingAssets));
+	}
+	
+	protected DBDestination getDBDownloadDestination(){
+		return new DBDestination(resourceInfo, cloneAssets(downloadingAssets));
+	}
+	
+	protected List<Asset> loadDownloadingAssetsInfo() {
+
+		List<Asset> assets = new ArrayList<Asset>();
+		String assetInfoFile = this.resourceInfo.getProperty("asset.info.downloading.file");
+		String assetLocation = resourceInfo.getProperty("asset.location");
+		try {
+			LOGGER.info("loading assets info from file: " + assetInfoFile);
+			AssetsInfo assetsInfo = getAssetsInfo();
+			assets = assetsInfo.loadAssetsInfo(assetInfoFile, assetLocation);
+			LOGGER.info("Assets info loading process has been completed from file: " + assetInfoFile);
+		} catch (Exception e) {
+			LOGGER.error("Problem occured while loading asset info from file: " + assetInfoFile, e);
+		}
+		LOGGER.info(assets.size() + " assets loaded to be process.");
+		return assets;
 	}
 }

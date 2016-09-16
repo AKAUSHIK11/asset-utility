@@ -101,4 +101,19 @@ public class AssetsInfo {
 		return new XSSFWorkbook(new FileInputStream(new File(assetNamePath)));
 	}
 
+	public List<Asset> loadDownloadingAssetsInfo(String assetInfoFile, String assetLocation)
+			throws Exception {
+
+		String assetInfoFileAbsolutePath = getFileUtil().getFileLocationFromClassPath(assetInfoFile);
+		String fileExtension = getFileUtil().getFileExtension(assetInfoFileAbsolutePath);
+		List<Asset> assets = new ArrayList<Asset>();
+		if (fileExtension.equals("xlsx")) {
+			assets = readDataFromExcel(assetInfoFileAbsolutePath, assetLocation);
+		} else {
+			LOGGER.error("Invalid file extension: " + fileExtension);
+			LOGGER.info("We only support .xlsx extension");
+			throw new Exception("Invalid file extension: " + fileExtension);
+		}
+		return assets;
+	}
 }

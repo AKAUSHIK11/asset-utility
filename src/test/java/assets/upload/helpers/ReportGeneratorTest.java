@@ -29,7 +29,7 @@ public class ReportGeneratorTest {
 	public void generateReportForSuccess(){
 		
 		List<Asset> assets = new ArrayList<Asset>();
-		Asset asset = new Asset("102", "101.tld", new File("101.tld"));
+		Asset asset = new Asset("102", "101.tld", new File("101.tld"),"test_table","test_column");
 		asset.setUploaded(true);
 		assets.add(asset);
 		String reportName = "abcReport.csv";
@@ -49,7 +49,7 @@ public class ReportGeneratorTest {
 	public void generateReportForFailure(){
 		
 		List<Asset> assets = new ArrayList<Asset>();
-		Asset asset = new Asset("102", "101.tld", new File("101.tld"));
+		Asset asset = new Asset("102", "101.tld", new File("101.tld"),"test_table","test_column");
 		asset.setUploaded(false);
 		assets.add(asset);
 		String reportName = "abcReport.csv";
@@ -70,7 +70,7 @@ public class ReportGeneratorTest {
 	public void generateReportFileNotFound(){
 		
 		List<Asset> assets = new ArrayList<Asset>();
-		Asset asset = new Asset("102", "101.tld", new File("101.tld"));
+		Asset asset = new Asset("102", "101.tld", new File("101.tld"),"test_table","test_column");
 		asset.setUploaded(false);
 		assets.add(asset);
 		String reportName = "abcReport.csv";

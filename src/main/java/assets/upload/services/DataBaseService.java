@@ -2,8 +2,13 @@ package assets.upload.services;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
@@ -30,12 +35,11 @@ public class DataBaseService {
 		Connection connection = dbHelper.getConnection();
 		for (Asset asset : assets) {
 			String tableName=asset.getTableName();
-			String Id=asset.getId();
 			String columnName=asset.getColumnName();
 			PreparedStatement preparedStatement;
 			try {
 				preparedStatement = connection.prepareStatement("UPDATE " + tableName+ " SET HTML_ASSET_BYTES=? WHERE "+ columnName+" =?");
-				inserAsset(asset, preparedStatement);
+				insertAsset(asset, preparedStatement);
 			} catch (SQLException ex) {
 				LOGGER.error("Problem occured while getting prepared statement object." , ex);
 			}
@@ -47,7 +51,7 @@ public class DataBaseService {
 	/**
 	 * Inserts single asset file into Database
 	 */
-	protected void inserAsset(Asset asset, PreparedStatement preparedStatement){
+	protected void insertAsset(Asset asset, PreparedStatement preparedStatement){
 		
 		File file = asset.getFile();
 		try {
@@ -76,5 +80,50 @@ public class DataBaseService {
 		
 		return new FileInputStream(file);
 	}
+	
+	public void downloadAssets(List<Asset> assets) {
 
+		Connection connection = dbHelper.getConnection();
+		for (Asset asset : assets) {
+			String tableName = asset.getTableName();
+			String columnName = asset.getColumnName();
+			PreparedStatement preparedStatement;
+			try {
+				preparedStatement = connection.prepareStatement("SELECT HTML_ASSET_BYTES FROM " + tableName + " WHERE " + columnName + " =?");
+				downloadAsset(asset, preparedStatement);
+			} catch (SQLException ex) {
+				LOGGER.error("Problem occured while getting prepared statement object.", ex);
+			}
+		}
+		dbHelper.closeConnection(connection);
+
+	}
+
+	public void downloadAsset(Asset asset, PreparedStatement preparedStatement) {
+		Connection connection = dbHelper.getConnection();
+		String assetName = asset.getName();
+		try {
+			preparedStatement.setString(1, asset.getId());
+			ResultSet result = preparedStatement.executeQuery();
+			if (result.next()) {
+				String filePath = dbHelper.getAssetDownloadLocation() + assetName;
+				Blob blob = result.getBlob("HTML_ASSET_BYTES");
+				InputStream inputStream = blob.getBinaryStream();
+				OutputStream outputStream = new FileOutputStream(filePath);
+				int bytesRead = -1;
+				byte[] buffer = new byte[4096];
+				while ((bytesRead = inputStream.read(buffer)) != -1) {
+					outputStream.write(buffer, 0, bytesRead);
+					asset.setDownloaded(true);
+				}
+				inputStream.close();
+				outputStream.close();
+				LOGGER.info("Asset downloaded successfully: " + assetName);
+			}
+		} catch (Exception ex) {
+			LOGGER.error("Assets: " + assetName + " cannot be downloaded because of follwing Exception : ", ex);
+		}
+		dbHelper.closeConnection(connection);
+
+	}
 }

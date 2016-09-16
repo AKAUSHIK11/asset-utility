@@ -20,6 +20,8 @@ public class Asset implements Cloneable {
 	boolean isFileSizeCompatible;
 	String tableName;
 	String columnName;
+	boolean isDownloaded;
+	
 	
 	public String getId() {
 		return id;
@@ -64,6 +66,13 @@ public class Asset implements Cloneable {
 	public void setColumnName(String columnName) {
 		this.columnName = columnName;
 	}
+	public boolean isDownloaded() {
+		return isDownloaded;
+	}
+	public void setDownloaded(boolean isDownloaded) {
+		this.isDownloaded = isDownloaded;
+	}
+
 	@Override
 	public Object clone() {
 		

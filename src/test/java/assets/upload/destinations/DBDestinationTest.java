@@ -34,7 +34,7 @@ public class DBDestinationTest {
 			}
 		};
 		dbDestination.upload();
-		verify(mockAssetsDBProcess).start(assets);
+		verify(mockAssetsDBProcess).startUpload(assets);
 	}
 	
 	@Test

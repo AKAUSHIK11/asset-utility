@@ -49,7 +49,7 @@ public class ProcessAssetsTest {
 		String assetInfoFile = "abc.xlsx";
 		String assetLocation = "e://abc/";
 		List<Asset> assets = new ArrayList<Asset>();
-		assets.add(new Asset("101", "101.tld", new File("101.tld")));
+		assets.add(new Asset("101", "101.tld", new File("101.tld"),"test_table","test_column"));
 		ProcessAssets processAssets = new ProcessAssets(){
 			
 			@Override
@@ -92,13 +92,13 @@ public class ProcessAssetsTest {
 	public void process()throws Exception{
 		
 		final List<Asset> assets = new ArrayList<Asset>();
-		assets.add(new Asset("101", "101.docx", new File("101.docx")));
-		String[] destinations = new String[]{"DB", "FTP", "ABC"};
+		assets.add(new Asset("101", "101.docx", new File("101.docx"),"test_table","test_column"));
+		String[] destinations = new String[]{"DBUpload", "FTP", "ABC"};
 		when(mockProperties.getProperty("asset.size")).thenReturn("12345");
 		ProcessAssets processAssets = new ProcessAssets(){
 			
 			@Override
-			protected DBDestination getDBDestination() {
+			protected DBDestination getDBUploadDestination() {
 				return mockDBDestination;
 			}
 			@Override

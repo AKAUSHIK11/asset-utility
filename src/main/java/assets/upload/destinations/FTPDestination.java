@@ -37,4 +37,10 @@ public class FTPDestination implements IAssetsDestination{
 		
 	}
 
+	@Override
+	public void download() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

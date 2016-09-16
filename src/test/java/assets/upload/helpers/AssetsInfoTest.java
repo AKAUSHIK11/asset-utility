@@ -39,6 +39,12 @@ public class AssetsInfoTest {
 	Row mockRow;
 	@Mock
 	Cell mockCell;
+	@Mock
+	Cell mockCell2;
+	@Mock
+	Cell mockCell3;
+	@Mock
+	Cell mockCell4;
 	
 	@Before
     public void setUp() {
@@ -51,9 +57,9 @@ public class AssetsInfoTest {
 		String assetLocation = "e://abc/";
 		String assetInfoFileAbsolutePath = "e://abc/abc.xlsx";
 		final List<Asset> assets = new ArrayList<Asset>();
-		assets.add(new Asset("101","101.xls",new File("101.xls")));
-		assets.add(new Asset("102","102.xlsx",new File("101.xlsx")));
-		assets.add(new Asset("103","103.doc",new File("101.doc")));
+		assets.add(new Asset("101","101.xls",new File("101.xls"),"test_table","test_column"));
+		assets.add(new Asset("102","102.xlsx",new File("101.xlsx"),"test_table","test_column"));
+		assets.add(new Asset("103","103.doc",new File("101.doc"),"test_table","test_column"));
 		AssetsInfo assetsInfo = new AssetsInfo(){
 			@Override
 			protected FileUtil getFileUtil() {
@@ -104,12 +110,18 @@ public class AssetsInfoTest {
 		when(mockRowIterator.hasNext()).thenReturn(true).thenReturn(true).thenReturn(false);
 		when(mockRowIterator.next()).thenReturn(mockRow);
 		when(mockRow.cellIterator()).thenReturn(mockCellIterator);
-		when(mockCellIterator.hasNext()).thenReturn(true).thenReturn(true).thenReturn(false);
-		when(mockCellIterator.next()).thenReturn(mockCell);
-		when(mockCell.getStringCellValue()).thenReturn("Id").thenReturn("File Name");
+		when(mockCellIterator.hasNext()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
+		when(mockCellIterator.next()).thenReturn(mockCell).thenReturn(mockCell2).thenReturn(mockCell3).thenReturn(mockCell4);
+		when(mockCell.getStringCellValue()).thenReturn("Id");
+		when(mockCell2.getStringCellValue()).thenReturn("File Name");
+		when(mockCell3.getStringCellValue()).thenReturn("Table Name");
+		when(mockCell4.getStringCellValue()).thenReturn("Column Name");
 		when(mockRow.getCell(0)).thenReturn(mockCell);
 		when(mockCell.getNumericCellValue()).thenReturn(1.0);
-		when(mockRow.getCell(1)).thenReturn(mockCell);
+		when(mockRow.getCell(1)).thenReturn(mockCell2);
+		when(mockRow.getCell(2)).thenReturn(mockCell3);
+		when(mockRow.getCell(3)).thenReturn(mockCell4);
+		
 		assertEquals(assetsInfo.readDataFromExcel(assetNamePath, "e://files/").size(),1);
 		verify(mockXSSFWorkbook).close();
 	}

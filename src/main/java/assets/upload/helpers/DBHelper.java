@@ -14,6 +14,7 @@ public class DBHelper {
 	private String url = null;
 	private String user = null;
 	private String password = null;
+	private String assetDownloadLocation=null;
 	private static Logger LOGGER = Logger.getLogger(DBHelper.class);
 
 	public DBHelper(Properties resourceInfo) {
@@ -21,6 +22,7 @@ public class DBHelper {
 		url = resourceInfo.getProperty("database.url");
 		user = resourceInfo.getProperty("database.user");
 		password = resourceInfo.getProperty("database.password");
+		assetDownloadLocation=resourceInfo.getProperty("asset.download.location");
 	}
 
 	/**
@@ -63,6 +65,11 @@ public class DBHelper {
 		} catch (SQLException ex) {
 			LOGGER.error("Can not close statement object.", ex);
 		}
+	}
+
+	public String getAssetDownloadLocation() {
+		
+		return assetDownloadLocation;
 	}
 
 }

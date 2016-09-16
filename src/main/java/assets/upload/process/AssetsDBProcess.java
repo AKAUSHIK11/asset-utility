@@ -25,7 +25,7 @@ public class AssetsDBProcess {
 	/**
 	 * Starts the DB Upload utility
 	 */	
-	public void start(List<Asset> assets){
+	public void startUpload(List<Asset> assets){
 		
 		if(assets.size() == 0){
 			LOGGER.error("Cann't proceed further as no asset information found...");
@@ -49,12 +49,26 @@ public class AssetsDBProcess {
 	 */
 	protected void generateReport(List<Asset> assets, String reportName) {
 		
-		LOGGER.info("Generating reports for BLOB insert");
+		LOGGER.info("Generating reports for BLOB");
 		reportGenerator.generateReport(assets, reportName, reportLocation);
-		LOGGER.info("Reports has been generated for BLOB insert");
+		LOGGER.info("Reports has been generated for BLOB");
 		
 	}
 
+	public void startDownload(List<Asset> assets){
+		
+		if(assets.size() == 0){
+			LOGGER.error("Cann't proceed further as no asset information found...");
+			return;
+		}
+		downloadAssets(assets);		
+		generateReport(assets, "db_download");
+	}
+	protected void downloadAssets(List<Asset> assets) {
+		LOGGER.info("Downloading assets in DB started..");
+		dataBaseService.downloadAssets(assets);
+		LOGGER.info("Downloading assets in DB completed..");
+	}
 
 
 }
