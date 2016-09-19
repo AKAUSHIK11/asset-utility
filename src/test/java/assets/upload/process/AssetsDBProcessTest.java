@@ -39,20 +39,20 @@ public class AssetsDBProcessTest {
 		assets.add(new Asset("102", "102.tld", new File(""),"test_table","test_column"));
 		AssetsDBProcess assetsDBProcess = new AssetsDBProcess(mockProperties){
 			@Override
-			protected void insertAssets(List<Asset> assets) {
+			protected void updateAssets(List<Asset> assets) {
 			}
 			@Override
 			protected void generateReport(List<Asset> assets, String reportName) {
 			}
 		};
-		assetsDBProcess.startUpload(assets);
+		assetsDBProcess.startUpdate(assets);
 	}
 	
 	@Test
 	public void startWithNoAsset()throws Exception{
 		List<Asset> assets = new ArrayList<Asset>();
 		AssetsDBProcess assetsDBProcess = new AssetsDBProcess(mockProperties);
-		assetsDBProcess.startUpload(assets);
+		assetsDBProcess.startUpdate(assets);
 	}
 	@Test
 	public void insertAssets()throws Exception{
@@ -63,9 +63,9 @@ public class AssetsDBProcessTest {
 		privateField.setAccessible(true);
 		privateField.set(assetsDBProcess, mockDataBaseService);
 		
-		assetsDBProcess.insertAssets(assets);
+		assetsDBProcess.updateAssets(assets);
 		
-		verify(mockDataBaseService).insertAssets(assets);
+		verify(mockDataBaseService).updateAssets(assets);
 	}
 	
 	@Test

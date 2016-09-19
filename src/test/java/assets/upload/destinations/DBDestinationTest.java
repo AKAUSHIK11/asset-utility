@@ -25,7 +25,7 @@ public class DBDestinationTest {
     }
 	
 	@Test
-	public void upload(){
+	public void update(){
 		List<Asset> assets = new ArrayList<Asset>();
 		DBDestination dbDestination = new DBDestination(mockProperties, assets){
 			@Override
@@ -33,8 +33,8 @@ public class DBDestinationTest {
 				return mockAssetsDBProcess;
 			}
 		};
-		dbDestination.upload();
-		verify(mockAssetsDBProcess).startUpload(assets);
+		dbDestination.update();
+		verify(mockAssetsDBProcess).startUpdate(assets);
 	}
 	
 	@Test

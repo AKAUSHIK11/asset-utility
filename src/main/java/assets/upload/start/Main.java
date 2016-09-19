@@ -14,13 +14,13 @@ public class Main {
     public static void main( String[] destinations ) throws Exception {
     	
     	LOGGER.info("**********************************************"); 
-    	LOGGER.info("Assets-uploader-utility has been started...");    	
-    	LOGGER.info("Following destinations have been supplied for assets to be upload: " + Arrays.toString(destinations));
+    	LOGGER.info("Assets-utility has been started...");    	
+    	LOGGER.info("Following destinations have been supplied for assets : " + Arrays.toString(destinations));
     	
         ProcessAssets processAssets = new ProcessAssets();
         processAssets.process(destinations);
         
-        LOGGER.info("Assets-uploader-utility has been completed.");
+        LOGGER.info("Assets-utility has been completed.");
         LOGGER.info("**********************************************");
     }
 }

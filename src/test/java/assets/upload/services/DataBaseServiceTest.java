@@ -51,7 +51,7 @@ public class DataBaseServiceTest {
 		when(inputStream.available()).thenReturn(1024);
 		DataBaseService dataBaseService = new DataBaseService(mockProperties){
 			@Override
-			protected void insertAsset(Asset asset, PreparedStatement preparedStatement) {
+			protected void updateAsset(Asset asset, PreparedStatement preparedStatement) {
 				
 			}
 		};
@@ -59,7 +59,7 @@ public class DataBaseServiceTest {
 		privateField.setAccessible(true);
 		privateField.set(dataBaseService, dbHelper);
 		
-		dataBaseService.insertAssets(assets);
+		dataBaseService.updateAssets(assets);
 		verify(dbHelper).closeConnection(mockConnection);
 	}
 	
@@ -85,7 +85,7 @@ public class DataBaseServiceTest {
 		Field privateField = DataBaseService.class.getDeclaredField("dbHelper");
 		privateField.setAccessible(true);
 		privateField.set(dataBaseService, dbHelper);
-		dataBaseService.insertAsset(asset, mockPreparedStatement);
+		dataBaseService.updateAsset(asset, mockPreparedStatement);
 		assertEquals(asset.isUploaded(), true);
 		verify(dbHelper).closeStatement(mockPreparedStatement);
 	}
@@ -112,7 +112,7 @@ public class DataBaseServiceTest {
 		Field privateField = DataBaseService.class.getDeclaredField("dbHelper");
 		privateField.setAccessible(true);
 		privateField.set(dataBaseService, dbHelper);
-		dataBaseService.insertAsset(asset, mockPreparedStatement);
+		dataBaseService.updateAsset(asset, mockPreparedStatement);
 		assertEquals(asset.isUploaded(), false);
 		verify(dbHelper).closeStatement(mockPreparedStatement);
 	}
@@ -139,7 +139,7 @@ public class DataBaseServiceTest {
 		Field privateField = DataBaseService.class.getDeclaredField("dbHelper");
 		privateField.setAccessible(true);
 		privateField.set(dataBaseService, dbHelper);
-		dataBaseService.insertAsset(asset, mockPreparedStatement);
+		dataBaseService.updateAsset(asset, mockPreparedStatement);
 		assertEquals(asset.isUploaded(), false);
 		verify(dbHelper).closeStatement(mockPreparedStatement);
 	}
@@ -160,7 +160,7 @@ public class DataBaseServiceTest {
 		Field privateField = DataBaseService.class.getDeclaredField("dbHelper");
 		privateField.setAccessible(true);
 		privateField.set(dataBaseService, dbHelper);
-		dataBaseService.insertAsset(asset, mockPreparedStatement);
+		dataBaseService.updateAsset(asset, mockPreparedStatement);
 		assertEquals(asset.isUploaded(), false);
 		verify(dbHelper).closeStatement(mockPreparedStatement);
 	}

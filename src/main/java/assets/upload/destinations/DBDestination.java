@@ -24,14 +24,14 @@ public class DBDestination implements IAssetsDestination{
 	 * 	Starts Upload process for Database
 	 */
 	@Override
-	public void upload() {
+	public void update() {
 		
 		AssetsDBProcess assetsDBProcess;
 		try {
 			assetsDBProcess = getAssetsDBProcess();
-			assetsDBProcess.startUpload(assets);
+			assetsDBProcess.startUpdate(assets);
 		} catch (Exception ex) {
-			LOGGER.error("Problem occured while uploading assests to DB", ex);
+			LOGGER.error("Problem occured while updating assests to DB", ex);
 		}		
 	}
 	
@@ -45,6 +45,17 @@ public class DBDestination implements IAssetsDestination{
 		try {
 			assetsDBProcess = getAssetsDBProcess();
 			assetsDBProcess.startDownload(assets);
+		} catch (Exception ex) {
+			LOGGER.error("Problem occured while downloading assests from DB", ex);
+		}		
+	}
+
+	@Override
+	public void upload() {
+		AssetsDBProcess assetsDBProcess;
+		try {
+			assetsDBProcess = getAssetsDBProcess();
+			assetsDBProcess.startUpload(assets);
 		} catch (Exception ex) {
 			LOGGER.error("Problem occured while uploading assests to DB", ex);
 		}		

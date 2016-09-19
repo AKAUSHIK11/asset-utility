@@ -30,7 +30,7 @@ public class DataBaseService {
 	/**
 	 * Inserts all the asset files provided into Database
 	 */
-	public void insertAssets(List<Asset> assets){
+	public void updateAssets(List<Asset> assets){
 		
 		Connection connection = dbHelper.getConnection();
 		for (Asset asset : assets) {
@@ -39,7 +39,7 @@ public class DataBaseService {
 			PreparedStatement preparedStatement;
 			try {
 				preparedStatement = connection.prepareStatement("UPDATE " + tableName+ " SET HTML_ASSET_BYTES=? WHERE "+ columnName+" =?");
-				insertAsset(asset, preparedStatement);
+				updateAsset(asset, preparedStatement);
 			} catch (SQLException ex) {
 				LOGGER.error("Problem occured while getting prepared statement object." , ex);
 			}
@@ -51,7 +51,7 @@ public class DataBaseService {
 	/**
 	 * Inserts single asset file into Database
 	 */
-	protected void insertAsset(Asset asset, PreparedStatement preparedStatement){
+	protected void updateAsset(Asset asset, PreparedStatement preparedStatement){
 		
 		File file = asset.getFile();
 		try {
@@ -69,7 +69,7 @@ public class DataBaseService {
 				LOGGER.error("Asset " + file.getName() + " doesn't have compatible file size. ");
 			}
 		} catch (Exception ex) {
-			LOGGER.error("Problem occured while inserting BLOB for file: "+file.getName() , ex);			
+			LOGGER.error("Problem occured while updating BLOB for file: "+file.getName() , ex);			
 		}finally{
 			dbHelper.closeStatement(preparedStatement);
 
@@ -125,5 +125,42 @@ public class DataBaseService {
 		}
 		dbHelper.closeConnection(connection);
 
+	}
+
+	public void insertAssets(List<Asset> assets) {
+		Connection connection = dbHelper.getConnection();
+		for (Asset asset : assets) {
+			PreparedStatement preparedStatement;
+			try {
+				preparedStatement = connection.prepareStatement("");
+				updateAsset(asset, preparedStatement);
+			} catch (SQLException ex) {
+				LOGGER.error("Problem occured while getting prepared statement object.", ex);
+			}
+		}
+		dbHelper.closeConnection(connection);
+
+	}
+	
+protected void insertAsset(Asset asset, PreparedStatement preparedStatement){
+		
+		File file = asset.getFile();
+		try {
+			if(asset.isFileSizeCompatible()){
+				int updatedRecord = preparedStatement.executeUpdate();
+				if(updatedRecord > 0){
+					asset.setUploaded(true);
+				}else{
+					LOGGER.info("There is no matching value in the Database for Asset " + file.getName());
+				}
+			}else{
+				LOGGER.error("Asset " + file.getName() + " doesn't have compatible file size. ");
+			}
+		} catch (Exception ex) {
+			LOGGER.error("Problem occured while inserting BLOB for file: "+file.getName() , ex);			
+		}finally{
+			dbHelper.closeStatement(preparedStatement);
+
+		}
 	}
 }

@@ -25,22 +25,22 @@ public class AssetsDBProcess {
 	/**
 	 * Starts the DB Upload utility
 	 */	
-	public void startUpload(List<Asset> assets){
+	public void startUpdate(List<Asset> assets){
 		
 		if(assets.size() == 0){
 			LOGGER.error("Cann't proceed further as no asset information found...");
 			return;
 		}
-		insertAssets(assets);		
+		updateAssets(assets);		
 		generateReport(assets, "db_upload");
 	}
 
 	/**
 	 * Inserts the asset files into Database
 	 */
-	protected void insertAssets(List<Asset> assets) {
+	protected void updateAssets(List<Asset> assets) {
 		LOGGER.info("Inserting assets in DB started..");
-		dataBaseService.insertAssets(assets);
+		dataBaseService.updateAssets(assets);
 		LOGGER.info("Inserting assets in DB completed..");
 	}
 
@@ -68,6 +68,24 @@ public class AssetsDBProcess {
 		LOGGER.info("Downloading assets in DB started..");
 		dataBaseService.downloadAssets(assets);
 		LOGGER.info("Downloading assets in DB completed..");
+	}
+
+	public void startUpload(List<Asset> assets) {
+		
+		if(assets.size() == 0){
+			LOGGER.error("Cann't proceed further as no asset information found...");
+			return;
+		}
+		insertAssets(assets);		
+		generateReport(assets, "db_upload");
+	}
+
+	private void insertAssets(List<Asset> assets) {
+		
+		LOGGER.info("Inserting assets in DB started..");
+		dataBaseService.insertAssets(assets);
+		LOGGER.info("Inserting assets in DB completed..");
+		
 	}
 
 

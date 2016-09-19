@@ -69,10 +69,10 @@ public class ProcessAssetsTest {
 		Field privateField = ProcessAssets.class.getDeclaredField("resourceInfo");
 		privateField.setAccessible(true);
 		privateField.set(processAssets, mockProperties);
-		when(mockProperties.getProperty("asset.info.file")).thenReturn(assetInfoFile);
+		when(mockProperties.getProperty("asset.updating.info.file")).thenReturn(assetInfoFile);
 		when(mockProperties.getProperty("asset.location")).thenReturn(assetLocation);
 		when(mockAssetsInfo.loadAssetsInfo(assetInfoFile, assetLocation)).thenReturn(assets);
-		List<Asset> returnAssets = processAssets.loadAssetsInfo();
+		List<Asset> returnAssets = processAssets.loadUpdatingAssetsInfo();
 		verify(mockAssetsInfo).loadAssetsInfo(assetInfoFile, assetLocation);
 		assertEquals(returnAssets.size(), assets.size());
 	}
@@ -93,12 +93,12 @@ public class ProcessAssetsTest {
 		
 		final List<Asset> assets = new ArrayList<Asset>();
 		assets.add(new Asset("101", "101.docx", new File("101.docx"),"test_table","test_column"));
-		String[] destinations = new String[]{"DBUpload", "FTP", "ABC"};
+		String[] destinations = new String[]{"DB-UpdateAssets", "FTP", "ABC"};
 		when(mockProperties.getProperty("asset.size")).thenReturn("12345");
 		ProcessAssets processAssets = new ProcessAssets(){
 			
 			@Override
-			protected DBDestination getDBUploadDestination() {
+			protected DBDestination getDBUpdateDestination() {
 				return mockDBDestination;
 			}
 			@Override
@@ -110,7 +110,7 @@ public class ProcessAssetsTest {
 				return mockProperties;
 			}
 			@Override
-			protected List<Asset> loadAssetsInfo() {
+			protected List<Asset> loadUpdatingAssetsInfo() {
 				return assets;
 			}
 		};
@@ -119,7 +119,7 @@ public class ProcessAssetsTest {
 		resourceInfoPrivateField.set(processAssets, mockProperties);
 		
 		processAssets.process(destinations);
-		verify(mockDBDestination).upload();
+		verify(mockDBDestination).update();
 		verify(mockFTPDestination).upload();
 	}
 	
@@ -137,7 +137,7 @@ public class ProcessAssetsTest {
 				return mockProperties;
 			}
 			@Override
-			protected List<Asset> loadAssetsInfo() {
+			protected List<Asset> loadUpdatingAssetsInfo() {
 				return assets;
 			}
 			@Override

@@ -100,20 +100,65 @@ public class AssetsInfo {
 		
 		return new XSSFWorkbook(new FileInputStream(new File(assetNamePath)));
 	}
-
-	public List<Asset> loadDownloadingAssetsInfo(String assetInfoFile, String assetLocation)
+	
+	public List<Asset> loadInsertingAssetsInfo(String assetInfoFile, String assetLocation)
 			throws Exception {
 
 		String assetInfoFileAbsolutePath = getFileUtil().getFileLocationFromClassPath(assetInfoFile);
 		String fileExtension = getFileUtil().getFileExtension(assetInfoFileAbsolutePath);
 		List<Asset> assets = new ArrayList<Asset>();
 		if (fileExtension.equals("xlsx")) {
-			assets = readDataFromExcel(assetInfoFileAbsolutePath, assetLocation);
+			assets = readInsertingDataFromExcel(assetInfoFileAbsolutePath, assetLocation);
 		} else {
 			LOGGER.error("Invalid file extension: " + fileExtension);
 			LOGGER.info("We only support .xlsx extension");
 			throw new Exception("Invalid file extension: " + fileExtension);
 		}
+		return assets;
+	}
+
+	private List<Asset> readInsertingDataFromExcel(String assetNamePath, String sourceDir) throws Exception {
+
+		XSSFWorkbook xlsxWorkbook = null;
+		XSSFSheet xlsxSheet = null;
+		Iterator<Row> rowIterator = null;
+
+		xlsxWorkbook = getExcelWorkbook(assetNamePath);
+		xlsxSheet = xlsxWorkbook.getSheetAt(0);
+		rowIterator = xlsxSheet.iterator();
+		Row row;
+		Cell cell;
+		List<Asset> assets = new ArrayList<Asset>();
+		Asset asset = null;
+		try {
+			List<Integer> columns = new ArrayList<Integer>();
+			if (rowIterator.hasNext()) {
+				row = rowIterator.next();
+				Iterator<Cell> cellIterator = row.cellIterator();
+				int columnPosition = 0;
+				while (cellIterator.hasNext()) {
+					cell = cellIterator.next();
+					if (cell.getStringCellValue().equalsIgnoreCase("Id")) {
+						columns.add(columnPosition);
+					} else if (cell.getStringCellValue().equalsIgnoreCase("File Name")) {
+						columns.add(columnPosition);
+					}
+					columnPosition++;
+				}
+			}
+			while (rowIterator.hasNext()) {
+				row = rowIterator.next();
+				String id = Long.toString(Math.round(row.getCell(columns.get(0)).getNumericCellValue()));
+				String name = row.getCell(columns.get(1)).getStringCellValue();
+				String tableName = row.getCell(columns.get(2)).getStringCellValue();
+				String columnName = row.getCell(columns.get(3)).getStringCellValue();
+				asset = new Asset(id, name, new File(sourceDir + name), tableName, columnName);
+				assets.add(asset);
+			}
+		} catch (Exception ex) {
+			LOGGER.error("Error while reading excel containing Assets info " + ex);
+		}
+		xlsxWorkbook.close();
 		return assets;
 	}
 }
