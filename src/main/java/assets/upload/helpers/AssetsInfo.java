@@ -3,6 +3,7 @@ package assets.upload.helpers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -62,16 +63,13 @@ public class AssetsInfo {
 				int columnPosition = 0;
 				while (cellIterator.hasNext()) {
 					cell = cellIterator.next();
-					if (cell.getStringCellValue().equalsIgnoreCase("Id")) {
+					if (cell.getStringCellValue().equalsIgnoreCase("GAME_ITEM_ID")) {
 						columns.add(columnPosition);
 					}
-					else if (cell.getStringCellValue().equalsIgnoreCase("File Name")) {
+					else if (cell.getStringCellValue().equalsIgnoreCase("TABLE_NAME")) {
 						columns.add(columnPosition);
 					}
-					else if (cell.getStringCellValue().equalsIgnoreCase("Table Name")) {
-						columns.add(columnPosition);
-					}
-					else if (cell.getStringCellValue().equalsIgnoreCase("Column Name")) {
+					else if (cell.getStringCellValue().equalsIgnoreCase("ASSET")) {
 						columns.add(columnPosition);
 					}
 					columnPosition++;
@@ -80,10 +78,10 @@ public class AssetsInfo {
 			while (rowIterator.hasNext()) {
 				row = rowIterator.next();
 				String id = Long.toString(Math.round(row.getCell(columns.get(0)).getNumericCellValue()));
-				String name = row.getCell(columns.get(1)).getStringCellValue();
-				String tableName=row.getCell(columns.get(2)).getStringCellValue();
-				String columnName=row.getCell(columns.get(3)).getStringCellValue();
-				asset = new Asset(id, name, new File(sourceDir + name),tableName,columnName);
+				String tableName = row.getCell(columns.get(1)).getStringCellValue();
+				String name=row.getCell(columns.get(2)).getStringCellValue();
+				//String columnName=row.getCell(columns.get(3)).getStringCellValue();
+				asset = new Asset(id, name, new File(sourceDir + name),tableName,"","","","","","",0,"",0,0,null);
 				assets.add(asset);
 			}
 		} catch (Exception ex) {
@@ -101,14 +99,14 @@ public class AssetsInfo {
 		return new XSSFWorkbook(new FileInputStream(new File(assetNamePath)));
 	}
 	
-	public List<Asset> loadInsertingAssetsInfo(String assetInfoFile, String assetLocation)
+	public List<Asset> loadInsertingAssetsInfo(String assetInfoFile, String assetLocation, HashMap<String, String> propertyMap,String assetThumbnailLocation)
 			throws Exception {
 
 		String assetInfoFileAbsolutePath = getFileUtil().getFileLocationFromClassPath(assetInfoFile);
 		String fileExtension = getFileUtil().getFileExtension(assetInfoFileAbsolutePath);
 		List<Asset> assets = new ArrayList<Asset>();
 		if (fileExtension.equals("xlsx")) {
-			assets = readInsertingDataFromExcel(assetInfoFileAbsolutePath, assetLocation);
+			assets = readInsertingDataFromExcel(assetInfoFileAbsolutePath, assetLocation,propertyMap,assetThumbnailLocation);
 		} else {
 			LOGGER.error("Invalid file extension: " + fileExtension);
 			LOGGER.info("We only support .xlsx extension");
@@ -117,7 +115,8 @@ public class AssetsInfo {
 		return assets;
 	}
 
-	private List<Asset> readInsertingDataFromExcel(String assetNamePath, String sourceDir) throws Exception {
+	private List<Asset> readInsertingDataFromExcel(String assetNamePath, String sourceDir,
+			HashMap<String, String> propertyMap,String assetThumbnailLocation) throws Exception {
 
 		XSSFWorkbook xlsxWorkbook = null;
 		XSSFSheet xlsxSheet = null;
@@ -138,11 +137,28 @@ public class AssetsInfo {
 				int columnPosition = 0;
 				while (cellIterator.hasNext()) {
 					cell = cellIterator.next();
-					if (cell.getStringCellValue().equalsIgnoreCase("Id")) {
+					if (cell.getStringCellValue().equalsIgnoreCase("GAME_ITEM_ID")) {
 						columns.add(columnPosition);
-					} else if (cell.getStringCellValue().equalsIgnoreCase("File Name")) {
+					} else if (cell.getStringCellValue().equalsIgnoreCase("NAME")) {
+						columns.add(columnPosition);
+					} else if (cell.getStringCellValue().equalsIgnoreCase("ASSET_FILENAME")) {
+						columns.add(columnPosition);
+					} else if (cell.getStringCellValue().equalsIgnoreCase("ASSET_CONTENT_TYPE")) {
+						columns.add(columnPosition);
+					} else if (cell.getStringCellValue().equalsIgnoreCase("THUMBNAIL_FILENAME")) {
+						columns.add(columnPosition);
+					} else if (cell.getStringCellValue().equalsIgnoreCase("THUMBNAIL_CONTENT_TYPE")) {
+						columns.add(columnPosition);
+					} else if (cell.getStringCellValue().equalsIgnoreCase("TABLE_NAME")) {
+						columns.add(columnPosition);
+					} else if (cell.getStringCellValue().equalsIgnoreCase("ORGANIZATION_TYPE")) {
+						columns.add(columnPosition);
+					} else if (cell.getStringCellValue().equalsIgnoreCase("AVAILABILITY_GROUP")) {
+						columns.add(columnPosition);
+					} else if (cell.getStringCellValue().equalsIgnoreCase("POINT_VAUE")) {
 						columns.add(columnPosition);
 					}
+
 					columnPosition++;
 				}
 			}
@@ -150,13 +166,21 @@ public class AssetsInfo {
 				row = rowIterator.next();
 				String id = Long.toString(Math.round(row.getCell(columns.get(0)).getNumericCellValue()));
 				String name = row.getCell(columns.get(1)).getStringCellValue();
-				String tableName = row.getCell(columns.get(2)).getStringCellValue();
-				String columnName = row.getCell(columns.get(3)).getStringCellValue();
-				asset = new Asset(id, name, new File(sourceDir + name), tableName, columnName);
+				String assetFileName = row.getCell(columns.get(2)).getStringCellValue();
+				String assetContentType = row.getCell(columns.get(3)).getStringCellValue();
+				String thumbnailFileName = row.getCell(columns.get(4)).getStringCellValue();
+				String thumbnailContentType = row.getCell(columns.get(5)).getStringCellValue();
+				String tableName = row.getCell(columns.get(6)).getStringCellValue();
+				int organizationTypeValue = (int) row.getCell(columns.get(7)).getNumericCellValue();
+				int gameItemGroupId = (int) row.getCell(columns.get(8)).getNumericCellValue();
+				int pointValue = (int) row.getCell(columns.get(9)).getNumericCellValue();
+				asset = new Asset(id, name, new File(sourceDir + assetFileName+".png"), tableName, "", assetFileName, assetContentType,
+						thumbnailFileName, thumbnailContentType, "", organizationTypeValue,
+						"", gameItemGroupId, pointValue,new File(assetThumbnailLocation + thumbnailFileName+".png"));
 				assets.add(asset);
 			}
 		} catch (Exception ex) {
-			LOGGER.error("Error while reading excel containing Assets info " + ex);
+			LOGGER.error("Error while reading excel containing inserting Assets info " + ex);
 		}
 		xlsxWorkbook.close();
 		return assets;

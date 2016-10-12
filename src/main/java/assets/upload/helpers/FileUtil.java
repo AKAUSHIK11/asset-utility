@@ -2,6 +2,7 @@ package assets.upload.helpers;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Properties;
 
 
@@ -13,7 +14,7 @@ public class FileUtil {
 	public Properties loadResources(String propertyFile) throws Exception {
 		
 		String fileAbsoultePath = getFileLocationFromClassPath(propertyFile);
-		FileInputStream input=getFileInputStream(fileAbsoultePath);
+		InputStream input=getFileInputStream(fileAbsoultePath);
 		Properties properties = getProperties();
 		properties.load(input);
 		return properties;
@@ -38,8 +39,8 @@ public class FileUtil {
 		fileExtension = fileLocation.substring(fileLocation.lastIndexOf('.')+1);
 		return fileExtension;
 	}
-	public FileInputStream getFileInputStream(String fileAbsoultePath)throws Exception{
-		return new FileInputStream(new File(fileAbsoultePath));
+	public InputStream getFileInputStream(String fileAbsoultePath)throws Exception{
+		return new FileInputStream((fileAbsoultePath));
 	}
 	public Properties getProperties(){
 		return new Properties();

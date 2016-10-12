@@ -36,7 +36,7 @@ public class AssetsDBProcessTest {
 	@Test
 	public void start()throws Exception{
 		List<Asset> assets = new ArrayList<Asset>();
-		assets.add(new Asset("102", "102.tld", new File(""),"test_table","test_column"));
+		assets.add(new Asset("102", "102.tld", new File(""),"test_table","test_column","","","","","",0,"",0,0,null));
 		AssetsDBProcess assetsDBProcess = new AssetsDBProcess(mockProperties){
 			@Override
 			protected void updateAssets(List<Asset> assets) {
@@ -55,9 +55,9 @@ public class AssetsDBProcessTest {
 		assetsDBProcess.startUpdate(assets);
 	}
 	@Test
-	public void insertAssets()throws Exception{
+	public void updateAssets()throws Exception{
 		List<Asset> assets = new ArrayList<Asset>();
-		assets.add(new Asset("102", "102.tld", new File("102.tld"),"test_table","test_column"));
+		assets.add(new Asset("102", "102.tld", new File("102.tld"),"test_table","test_column","","","","","",0,"",0,0,null));
 		AssetsDBProcess assetsDBProcess = new AssetsDBProcess(mockProperties);
 		Field privateField = AssetsDBProcess.class.getDeclaredField("dataBaseService");
 		privateField.setAccessible(true);
@@ -69,9 +69,97 @@ public class AssetsDBProcessTest {
 	}
 	
 	@Test
-	public void generateReport()throws Exception{
+	public void generateUpdateReport()throws Exception{
 		List<Asset> assets = new ArrayList<Asset>();
-		assets.add(new Asset("102", "102.tld", new File(""),"test_table","test_column"));
+		assets.add(new Asset("102", "102.tld", new File(""),"test_table","test_column","","","","","",0,"",0,0,null));
+		String reportLocation="e://abc/";
+		when(mockProperties.getProperty("report.location")).thenReturn(reportLocation);
+		AssetsDBProcess assetsDBProcess = new AssetsDBProcess(mockProperties);
+		Field privateField = AssetsDBProcess.class.getDeclaredField("reportGenerator");
+		privateField.setAccessible(true);
+		privateField.set(assetsDBProcess, mockReportGenerator);
+		
+		assetsDBProcess.generateReport(assets,"db_update.csv");
+		
+		verify(mockReportGenerator).generateReport(assets,"db_update.csv",reportLocation );
+	}
+	
+	@Test
+	public void downloadAssets()throws Exception{
+		List<Asset> assets = new ArrayList<Asset>();
+		assets.add(new Asset("102", "102.tld", new File("102.tld"),"test_table","test_column","","","","","",0,"",0,0,null));
+		AssetsDBProcess assetsDBProcess = new AssetsDBProcess(mockProperties);
+		Field privateField = AssetsDBProcess.class.getDeclaredField("dataBaseService");
+		privateField.setAccessible(true);
+		privateField.set(assetsDBProcess, mockDataBaseService);
+		
+		assetsDBProcess.downloadAssets(assets);
+		
+		verify(mockDataBaseService).downloadAssets(assets);
+	}
+	
+	@Test
+	public void startDownload()throws Exception{
+		List<Asset> assets = new ArrayList<Asset>();
+		assets.add(new Asset("102", "102.tld", new File(""),"test_table","test_column","","","","","",0,"",0,0,null));
+		AssetsDBProcess assetsDBProcess = new AssetsDBProcess(mockProperties){
+			@Override
+			public void downloadAssets(List<Asset> assets) {
+			}
+			@Override
+			protected void generateReport(List<Asset> assets, String reportName) {
+			}
+		};
+		assetsDBProcess.startDownload(assets);
+	}
+	
+	@Test
+	public void generateDownloadReport()throws Exception{
+		List<Asset> assets = new ArrayList<Asset>();
+		assets.add(new Asset("102", "102.tld", new File(""),"test_table","test_column","","","","","",0,"",0,0,null));
+		String reportLocation="e://abc/";
+		when(mockProperties.getProperty("report.location")).thenReturn(reportLocation);
+		AssetsDBProcess assetsDBProcess = new AssetsDBProcess(mockProperties);
+		Field privateField = AssetsDBProcess.class.getDeclaredField("reportGenerator");
+		privateField.setAccessible(true);
+		privateField.set(assetsDBProcess, mockReportGenerator);
+		
+		assetsDBProcess.generateReport(assets,"db_download.csv");
+		
+		verify(mockReportGenerator).generateReport(assets,"db_download.csv",reportLocation );
+	}
+	
+	@Test
+	public void insertAssets()throws Exception{
+		List<Asset> assets = new ArrayList<Asset>();
+		assets.add(new Asset("102", "102.tld", new File("102.tld"),"test_table","test_column","","","","","",0,"",0,0,null));
+		AssetsDBProcess assetsDBProcess = new AssetsDBProcess(mockProperties);
+		Field privateField = AssetsDBProcess.class.getDeclaredField("dataBaseService");
+		privateField.setAccessible(true);
+		privateField.set(assetsDBProcess, mockDataBaseService);
+		
+		assetsDBProcess.insertAssets(assets);
+		
+		verify(mockDataBaseService).insertAssets(assets);
+	}
+	@Test
+	public void startUpload()throws Exception{
+		List<Asset> assets = new ArrayList<Asset>();
+		assets.add(new Asset("102", "102.tld", new File(""),"test_table","test_column","","","","","",0,"",0,0,null));
+		AssetsDBProcess assetsDBProcess = new AssetsDBProcess(mockProperties){
+			@Override
+			public void insertAssets(List<Asset> assets) {
+			}
+			@Override
+			protected void generateReport(List<Asset> assets, String reportName) {
+			}
+		};
+		assetsDBProcess.startUpload(assets);
+	}
+	@Test
+	public void generateUploadReport()throws Exception{
+		List<Asset> assets = new ArrayList<Asset>();
+		assets.add(new Asset("102", "102.tld", new File(""),"test_table","test_column","","","","","",0,"",0,0,null));
 		String reportLocation="e://abc/";
 		when(mockProperties.getProperty("report.location")).thenReturn(reportLocation);
 		AssetsDBProcess assetsDBProcess = new AssetsDBProcess(mockProperties);

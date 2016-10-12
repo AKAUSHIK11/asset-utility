@@ -1,6 +1,7 @@
 package assets.upload.start;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -22,10 +23,12 @@ public class ProcessAssets {
 			throw new Exception();
 		}
 		
-		this.updatingAssets = loadUpdatingAssetsInfo();
+		HashMap<String, String> propertyMap=getMap(this.resourceInfo);
+		//this.updatingAssets = loadUpdatingAssetsInfo();
 		this.downloadingAssets=loadDownloadingAssetsInfo();
-		this.insertingAssets=loadInsertingAssetsInfo();
-		updateFileSizeCompatibility(this.updatingAssets);
+		this.insertingAssets=loadInsertingAssetsInfo(propertyMap);
+
+		//updateFileSizeCompatibility(this.updatingAssets);
 		updateFileSizeCompatibility(this.insertingAssets);
 	}
 	
@@ -136,14 +139,15 @@ public class ProcessAssets {
 	 */
 	protected void updateFileSizeCompatibility(List<Asset> assets){
 		Long fileSize = Long.parseLong(resourceInfo.getProperty("asset.size"));
-		this.updatingAssets=new ArrayList<Asset>();
+		this.insertingAssets=new ArrayList<Asset>();
 		for(Asset asset : assets){
 			if(asset.getFile().length() <= fileSize){
 				asset.setFileSizeCompatible(true);
 			}
-			this.updatingAssets.add(asset);
+			this.insertingAssets.add(asset);
 		}
 	}
+	
 	protected DBDestination getDBUpdateDestination(){
 		return new DBDestination(resourceInfo, cloneAssets(updatingAssets));
 	}
@@ -175,15 +179,16 @@ public class ProcessAssets {
 		return assets;
 	}
 	
-	protected List<Asset> loadInsertingAssetsInfo() {
+	protected List<Asset> loadInsertingAssetsInfo(HashMap<String, String> propertyMap) {
 
 		List<Asset> assets = new ArrayList<Asset>();
-		String assetInfoFile = this.resourceInfo.getProperty("assets.inserting.info.file");
+		String assetInfoFile = this.resourceInfo.getProperty("asset.inserting.info.file");
 		String assetLocation = resourceInfo.getProperty("asset.location");
+		String assetthumbnailLocation=resourceInfo.getProperty("asset.thumbnail.location");
 		try {
 			LOGGER.info("loading assets info from file: " + assetInfoFile);
 			AssetsInfo assetsInfo = getAssetsInfo();
-			assets = assetsInfo.loadInsertingAssetsInfo(assetInfoFile, assetLocation);
+			assets = assetsInfo.loadInsertingAssetsInfo(assetInfoFile, assetLocation,propertyMap,assetthumbnailLocation);
 			LOGGER.info("Assets info loading process has been completed from file: " + assetInfoFile);
 		} catch (Exception e) {
 			LOGGER.error("Problem occured while loading asset info from file: " + assetInfoFile, e);
@@ -191,8 +196,11 @@ public class ProcessAssets {
 		LOGGER.info(assets.size() + " assets loaded to be process.");
 		return assets;
 	}
-	protected void loadInfo(String destinations)
+	public HashMap<String,String> getMap(Properties properties)
 	{
-		
+		HashMap<String,String> propertyMap=new HashMap<String,String>();
+		for (final String name: properties.stringPropertyNames())
+			propertyMap.put(name, properties.getProperty(name));
+		return propertyMap;
 	}
 }

@@ -29,8 +29,10 @@ public class ReportGeneratorTest {
 	public void generateReportForSuccess(){
 		
 		List<Asset> assets = new ArrayList<Asset>();
-		Asset asset = new Asset("102", "101.tld", new File("101.tld"),"test_table","test_column");
+		Asset asset = new Asset("102", "101.tld", new File("101.tld"),"test_table","test_column","","","","","",0,"",0,0,null);
 		asset.setUploaded(true);
+		asset.setDownloaded(true);
+		asset.setUpdated(true);
 		assets.add(asset);
 		String reportName = "abcReport.csv";
 		String reportLocation = "report";
@@ -49,8 +51,10 @@ public class ReportGeneratorTest {
 	public void generateReportForFailure(){
 		
 		List<Asset> assets = new ArrayList<Asset>();
-		Asset asset = new Asset("102", "101.tld", new File("101.tld"),"test_table","test_column");
+		Asset asset = new Asset("102", "101.tld", new File("101.tld"),"test_table","test_column","","","","","",0,"",0,0,null);
 		asset.setUploaded(false);
+		asset.setDownloaded(false);
+		asset.setUpdated(false);
 		assets.add(asset);
 		String reportName = "abcReport.csv";
 		String reportLocation = "report";
@@ -70,7 +74,7 @@ public class ReportGeneratorTest {
 	public void generateReportFileNotFound(){
 		
 		List<Asset> assets = new ArrayList<Asset>();
-		Asset asset = new Asset("102", "101.tld", new File("101.tld"),"test_table","test_column");
+		Asset asset = new Asset("102", "101.tld", new File("101.tld"),"test_table","test_column","","","","","",0,"",0,0,null);
 		asset.setUploaded(false);
 		assets.add(asset);
 		String reportName = "abcReport.csv";

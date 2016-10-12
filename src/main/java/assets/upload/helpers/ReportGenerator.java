@@ -34,7 +34,7 @@ public class ReportGenerator {
 			out = getPrintWriter(reportPath.toString());
 			out.println("Id"+","+"File Name"+","+"Status");
 			for (Asset asset : assets) {
-				if(asset.isUploaded() || asset.isDownloaded()){
+				if(asset.isUploaded() || asset.isDownloaded() || asset.isUpdated()){
 					out.println(asset.getId()+","+asset.getFile().getName()+","+"SUCCESS");
 				}else{
 					out.println(asset.getId()+","+asset.getFile().getName()+","+"Failure");

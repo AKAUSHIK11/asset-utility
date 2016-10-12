@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -49,7 +50,7 @@ public class ProcessAssetsTest {
 		String assetInfoFile = "abc.xlsx";
 		String assetLocation = "e://abc/";
 		List<Asset> assets = new ArrayList<Asset>();
-		assets.add(new Asset("101", "101.tld", new File("101.tld"),"test_table","test_column"));
+		assets.add(new Asset("101", "101.tld", new File("101.tld"),"test_table","test_column","","","","","",0,"",0,0,null));
 		ProcessAssets processAssets = new ProcessAssets(){
 			
 			@Override
@@ -92,13 +93,21 @@ public class ProcessAssetsTest {
 	public void process()throws Exception{
 		
 		final List<Asset> assets = new ArrayList<Asset>();
-		assets.add(new Asset("101", "101.docx", new File("101.docx"),"test_table","test_column"));
-		String[] destinations = new String[]{"DB-UpdateAssets", "FTP", "ABC"};
+		assets.add(new Asset("101", "101.docx", new File("101.docx"),"test_table","test_column","","","","","",0,"",0,0,null));
+		String[] destinations = new String[]{"DB-UpdateAssets", "FTP","DBDownload","DB-InsertAssets","ABC"};
 		when(mockProperties.getProperty("asset.size")).thenReturn("12345");
 		ProcessAssets processAssets = new ProcessAssets(){
 			
 			@Override
 			protected DBDestination getDBUpdateDestination() {
+				return mockDBDestination;
+			}
+			@Override
+			protected DBDestination getDBDownloadDestination() {
+				return mockDBDestination;
+			}
+			@Override
+			protected DBDestination getDBInsertDestination() {
 				return mockDBDestination;
 			}
 			@Override
@@ -121,6 +130,8 @@ public class ProcessAssetsTest {
 		processAssets.process(destinations);
 		verify(mockDBDestination).update();
 		verify(mockFTPDestination).upload();
+		verify(mockDBDestination).download();
+		verify(mockDBDestination).upload();
 	}
 	
 	@Test
@@ -146,5 +157,75 @@ public class ProcessAssetsTest {
 			}
 		};
 		processAssets.process(destinations);
+	}
+	
+	@Test
+	public void loadDownloadingAssetsInfo()throws Exception{
+		
+		String assetInfoFile = "abc.xlsx";
+		String assetLocation = "e://abc/";
+		List<Asset> assets = new ArrayList<Asset>();
+		assets.add(new Asset("101", "101.tld", new File("101.tld"),"test_table","test_column","","","","","",0,"",0,0,null));
+		ProcessAssets processAssets = new ProcessAssets(){
+			
+			@Override
+			protected Properties loadConfiguration(String propertyFile) {
+				return mockProperties;
+			}
+			@Override
+			protected AssetsInfo getAssetsInfo() {
+				return mockAssetsInfo;
+			}
+			@Override
+			protected void updateFileSizeCompatibility(List<Asset> assets) {
+				
+			}
+		};
+		
+		Field privateField = ProcessAssets.class.getDeclaredField("resourceInfo");
+		privateField.setAccessible(true);
+		privateField.set(processAssets, mockProperties);
+		when(mockProperties.getProperty("asset.downloading.info.file")).thenReturn(assetInfoFile);
+		when(mockProperties.getProperty("asset.location")).thenReturn(assetLocation);
+		when(mockAssetsInfo.loadAssetsInfo(assetInfoFile, assetLocation)).thenReturn(assets);
+		List<Asset> returnAssets = processAssets.loadDownloadingAssetsInfo();
+		verify(mockAssetsInfo).loadAssetsInfo(assetInfoFile, assetLocation);
+		assertEquals(returnAssets.size(), assets.size());
+	}
+	@Test
+	public void loadInsertingAssetsInfo()throws Exception{
+		
+		String assetInfoFile = "abc.xlsx";
+		String assetLocation = "e://abc/";
+		String thumbnailLocation="e://xyz/";
+		final List<Asset> assets = new ArrayList<Asset>();
+		HashMap<String, String> propertyMap=new HashMap<String, String>();
+		assets.add(new Asset("101", "101.tld", new File("101.tld"),"test_table","test_column","","","","","",0,"",0,0,null));
+		ProcessAssets processAssets = new ProcessAssets(){
+			
+			@Override
+			protected Properties loadConfiguration(String propertyFile) {
+				return mockProperties;
+			}
+			@Override
+			protected AssetsInfo getAssetsInfo() {
+				return mockAssetsInfo;
+			}
+			@Override
+			protected void updateFileSizeCompatibility(List<Asset> assets) {
+				
+			}
+		};
+		
+		Field privateField = ProcessAssets.class.getDeclaredField("resourceInfo");
+		privateField.setAccessible(true);
+		privateField.set(processAssets, mockProperties);
+		when(mockProperties.getProperty("asset.inserting.info.file")).thenReturn(assetInfoFile);
+		when(mockProperties.getProperty("asset.location")).thenReturn(assetLocation);
+		when(mockProperties.getProperty("asset.thumbnail.location")).thenReturn(thumbnailLocation);
+		when(mockAssetsInfo.loadInsertingAssetsInfo(assetInfoFile, assetLocation, propertyMap, thumbnailLocation)).thenReturn(assets);
+		List<Asset> returnAssets = processAssets.loadInsertingAssetsInfo(propertyMap);
+		verify(mockAssetsInfo).loadInsertingAssetsInfo(assetInfoFile, assetLocation, propertyMap,thumbnailLocation);
+		assertEquals(returnAssets.size(), assets.size());
 	}
 }

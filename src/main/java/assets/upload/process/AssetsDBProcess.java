@@ -32,16 +32,16 @@ public class AssetsDBProcess {
 			return;
 		}
 		updateAssets(assets);		
-		generateReport(assets, "db_upload");
+		generateReport(assets, "db_update");
 	}
 
 	/**
 	 * Inserts the asset files into Database
 	 */
 	protected void updateAssets(List<Asset> assets) {
-		LOGGER.info("Inserting assets in DB started..");
+		LOGGER.info("Updating assets in DB started..");
 		dataBaseService.updateAssets(assets);
-		LOGGER.info("Inserting assets in DB completed..");
+		LOGGER.info("Updating assets in DB completed..");
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class AssetsDBProcess {
 		generateReport(assets, "db_upload");
 	}
 
-	private void insertAssets(List<Asset> assets) {
+	public void insertAssets(List<Asset> assets) {
 		
 		LOGGER.info("Inserting assets in DB started..");
 		dataBaseService.insertAssets(assets);
