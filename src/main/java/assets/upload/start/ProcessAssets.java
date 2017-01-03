@@ -24,12 +24,12 @@ public class ProcessAssets {
 		}
 		
 		HashMap<String, String> propertyMap=getMap(this.resourceInfo);
-		//this.updatingAssets = loadUpdatingAssetsInfo();
+		this.updatingAssets = loadUpdatingAssetsInfo();
 		this.downloadingAssets=loadDownloadingAssetsInfo();
 		this.insertingAssets=loadInsertingAssetsInfo(propertyMap);
 
-		//updateFileSizeCompatibility(this.updatingAssets);
-		updateFileSizeCompatibility(this.insertingAssets);
+		updateFileSizeCompatibility(this.updatingAssets);
+		updateFileSizeCompatibilityForInsertingAssets(this.insertingAssets);
 	}
 	
 
@@ -102,7 +102,7 @@ public class ProcessAssets {
 						assetsDestination.upload();
 						LOGGER.info("---- FTP module has been completed.---- ");
 						break;
-					case "DBDownload":
+					case "DB-DownloadAssets":
 						LOGGER.info("---- DBDownload module has been started.---- ");
 						assetsDestination = getDBDownloadDestination();
 						assetsDestination.download();
@@ -139,12 +139,12 @@ public class ProcessAssets {
 	 */
 	protected void updateFileSizeCompatibility(List<Asset> assets){
 		Long fileSize = Long.parseLong(resourceInfo.getProperty("asset.size"));
-		this.insertingAssets=new ArrayList<Asset>();
+		this.updatingAssets=new ArrayList<Asset>();
 		for(Asset asset : assets){
 			if(asset.getFile().length() <= fileSize){
 				asset.setFileSizeCompatible(true);
 			}
-			this.insertingAssets.add(asset);
+			this.updatingAssets.add(asset);
 		}
 	}
 	
@@ -202,5 +202,16 @@ public class ProcessAssets {
 		for (final String name: properties.stringPropertyNames())
 			propertyMap.put(name, properties.getProperty(name));
 		return propertyMap;
+	}
+	
+	protected void updateFileSizeCompatibilityForInsertingAssets(List<Asset> assets){
+		Long fileSize = Long.parseLong(resourceInfo.getProperty("asset.size"));
+		this.insertingAssets=new ArrayList<Asset>();
+		for(Asset asset : assets){
+			if(asset.getFile().length() <= fileSize){
+				asset.setFileSizeCompatible(true);
+			}
+			this.insertingAssets.add(asset);
+		}
 	}
 }
